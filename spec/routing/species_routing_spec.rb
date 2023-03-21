@@ -10,7 +10,6 @@ RSpec.describe SpeciesController, type: :routing do
       expect(get: "/species/1").to route_to("species#show", id: "1", format: :json)
     end
 
-
     it "routes to #create" do
       expect(post: "/species").to route_to("species#create", format: :json)
     end

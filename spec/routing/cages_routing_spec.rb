@@ -10,7 +10,6 @@ RSpec.describe CagesController, type: :routing do
       expect(get: "/cages/1").to route_to("cages#show", id: "1", format: :json)
     end
 
-
     it "routes to #create" do
       expect(post: "/cages").to route_to("cages#create", format: :json)
     end

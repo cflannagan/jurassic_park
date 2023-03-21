@@ -1,5 +1,6 @@
+# Controller class for Species model
 class SpeciesController < ApplicationController
-  before_action :set_species, only: %i[ show update destroy ]
+  before_action :set_species, only: %i[show update destroy]
 
   # GET /species
   # GET /species.json
@@ -9,8 +10,7 @@ class SpeciesController < ApplicationController
 
   # GET /species/1
   # GET /species/1.json
-  def show
-  end
+  def show; end
 
   # POST /species
   # POST /species.json
@@ -41,13 +41,14 @@ class SpeciesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_species
-      @species = Species.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def species_params
-      params.require(:species).permit(:name, :dinosaur_type)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_species
+    @species = Species.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def species_params
+    params.require(:species).permit(:name, :dinosaur_type)
+  end
 end
