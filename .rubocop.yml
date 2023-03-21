@@ -13,3 +13,7 @@ Style/Documentation:
     - 'app/models/application_record.rb'
     - 'config/application.rb'
     - 'db/**/*'
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
