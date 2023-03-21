@@ -8,6 +8,7 @@ RSpec.describe Cage, type: :model do
 
   context "validations" do
     it { is_expected.to validate_presence_of(:capacity) }
+    it { should validate_numericality_of(:capacity).only_integer.is_greater_than(0) }
     it { is_expected.to validate_presence_of(:power_status) }
   end
 end
