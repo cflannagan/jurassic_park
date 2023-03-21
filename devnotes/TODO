@@ -7,3 +7,6 @@ resources :dinosaurs, defaults: {format: :json} # in routes.rb
 
 rails g scaffold_controller Cage capacity:integer power_status:enum --api
 resources :cages, defaults: {format: :json} # in routes.rb
+
+rails g scaffold_controller Species name:string dinosaur_type:enum --api
+resources :cages, defaults: {format: :json} # in routes.rb
