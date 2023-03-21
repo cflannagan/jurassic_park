@@ -1,3 +1,9 @@
 rspec and implementation to ensure input values is one of allowed enums (cage power status, species dino type)
 
 https://danielabaron.me/blog/rails-enum-mysql-postgres/ (do i need to switch to stucture.sql? will read later)
+
+rails d scaffold_controller Dinosaur name:string species:string --api
+rails g scaffold_controller Dinosaur name:string species:references cage:references --api
+resources :dinosaurs, defaults: {format: :json} # in routes.rb
+
+rails g scaffold_controller Cage capacity:integer power_status:enum --api
