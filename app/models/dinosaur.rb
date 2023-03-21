@@ -4,6 +4,12 @@ class Dinosaur < ApplicationRecord
   belongs_to :cage, optional: true
 
   validates :name, presence: true, uniqueness: true
+  with_options if: :cage do |cage|
+    cage.validate :cage_is_not_powered_down # , if: :cage
+    cage.validate :cage_is_not_full # , if: :cage
+    cage.validate :cage_has_same_species # , if: :cage
+    cage.validate :cage_has_no_carnivores # , if: :cage
+  end
 
   delegate :carnivore?, :herbivore?, to: :species
 
@@ -18,5 +24,33 @@ class Dinosaur < ApplicationRecord
   # won't error if already removed from cage
   def remove_from_cage!
     update!(cage: nil)
+  end
+
+  private
+
+  def cage_is_not_powered_down
+    errors.add(:base, "Cannot assign to powered down cage") if cage.down?
+  end
+
+  def cage_is_not_full
+    errors.add(:base, "Cannot assign to full cage") if cage.full?
+  end
+
+  def cage_has_same_species
+    return unless carnivore?
+
+    return unless cage.dinosaurs.where.not(species:).exists?
+
+    errors.add(:base, "#{name} is a #{species}; can only be assigned to either an active empty cage or a cage " \
+      "containing #{species} dinosaurs")
+  end
+
+  def cage_has_no_carnivores
+    return unless herbivore?
+
+    return unless cage.dinosaurs.joins(:species).where("species.dinosaur_type = 'carnivore'").exists?
+
+    errors.add(:base, "#{name} is a #{species} (a herbivore); can only be assigned to either an active empty cage or a
+      cage containing other herbivores")
   end
 end

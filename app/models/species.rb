@@ -7,7 +7,9 @@ class Species < ApplicationRecord
 
   has_many :dinosaurs
 
-  private
+  def to_s
+    name
+  end
 
   def carnivore!
     raise StandardError, "Changing dinosaur type is not allowed"

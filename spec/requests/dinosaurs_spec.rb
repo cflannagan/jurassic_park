@@ -84,7 +84,7 @@ RSpec.describe "/dinosaurs", type: :request do
 
   describe "PATCH /update" do
     context "with valid parameters" do
-      let(:cage) { create(:cage) }
+      let(:cage) { create(:cage, :active) }
       let(:new_attributes) {
         { cage_id: cage.id }
       }

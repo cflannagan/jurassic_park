@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :species do
-    name { "Tyrannosaurus" }
-    dinosaur_type { "carnivore" }
+    name { "Stegosaurus" }
+    dinosaur_type { "herbivore" }
   end
 end

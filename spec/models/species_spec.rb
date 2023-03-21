@@ -12,6 +12,7 @@ RSpec.describe Species, type: :model do
     it "should raise an error" do
       subject.save!
       expect { subject.carnivore! }.to raise_error(StandardError)
+      expect { subject.herbivore! }.to raise_error(StandardError)
     end
   end
 
