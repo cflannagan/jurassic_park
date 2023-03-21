@@ -50,3 +50,7 @@ dinosaurs.each do |dinosaur|
   Dinosaur.find_or_create_by!(name:, species:)
   puts "#{name}, a #{species_name}, has been added to Jurassic Park!"
 end
+
+ActiveRecord::Base.connection.tables.each do |t|
+  ActiveRecord::Base.connection.reset_pk_sequence!(t)
+end
