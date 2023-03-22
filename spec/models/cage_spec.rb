@@ -19,6 +19,29 @@ RSpec.describe Cage, type: :model do
     it { should have_many(:dinosaurs) }
   end
 
+  context "db constraints" do
+    context "cage_id trigger check for carnivores" do
+      let(:cage) { create(:cage, :active) }
+      let!(:dino) { create(:dinosaur, cage:) }
+      it "cannot be powered down when dinos are present" do
+        expect { cage.update_column(:power_status, "DOWN") }
+          .to raise_error(ActiveRecord::StatementInvalid, /dinosaurs are present/)
+      end
+      it "cannot have capacity changed to be below occupancy" do
+        cage.update!(capacity: 2) # we want to test going from 2 to 1 rather than 1 to 0 because 0 isn't allowed
+        create(:dinosaur, cage:)
+        expect { cage.update_column(:capacity, 1) }
+          .to raise_error(ActiveRecord::StatementInvalid, /occupancy cannot exceed capacity/)
+      end
+      it "must be greater than 0" do
+        dino.update!(cage: nil)
+        expect(cage).not_to be_occupied
+        expect { cage.update_column(:capacity, 0) }
+          .to raise_error(ActiveRecord::StatementInvalid, /violates check constraint/)
+      end
+    end
+  end
+
   context "validations" do
     it { is_expected.to validate_presence_of(:capacity) }
     it { should validate_numericality_of(:capacity).only_integer.is_greater_than(0) }

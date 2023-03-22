@@ -77,6 +77,37 @@ CREATE FUNCTION public.check_cage_id() RETURNS trigger
       $$;
 
 
+--
+-- Name: check_cage_status_and_capacity(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.check_cage_status_and_capacity() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      DECLARE
+        occupancy INTEGER;
+      BEGIN
+
+        SELECT COUNT(*) INTO occupancy FROM dinosaurs WHERE cage_id = NEW.id;
+
+        -- we only want to check power_status if it has changed and it's now 'DOWN'. No need to check if it's 'ACTIVE'
+        IF NEW.power_status = 'DOWN' AND OLD.power_status IS DISTINCT FROM NEW.power_status THEN
+          IF occupancy > 0 THEN
+            RAISE EXCEPTION 'Cannot power down when dinosaurs are present';
+          END IF;
+        END IF;
+
+        -- we only want to check capacity if it has been changed and capacity is going down
+        IF OLD.capacity IS DISTINCT FROM NEW.capacity AND NEW.capacity < OLD.capacity THEN
+          IF occupancy > NEW.capacity THEN
+            RAISE EXCEPTION 'Cannot change capacity; occupancy cannot exceed capacity';
+          END IF;
+        END IF;
+        RETURN NEW;
+      END;
+      $$;
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -102,7 +133,8 @@ CREATE TABLE public.cages (
     capacity integer DEFAULT 1 NOT NULL,
     power_status public.power_classification DEFAULT 'DOWN'::public.power_classification NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT capacity_non_negative CHECK ((capacity > 0))
 );
 
 
@@ -296,6 +328,13 @@ CREATE TRIGGER check_cage_id BEFORE INSERT OR UPDATE ON public.dinosaurs FOR EAC
 
 
 --
+-- Name: cages check_cage_status_and_capacity; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER check_cage_status_and_capacity BEFORE UPDATE ON public.cages FOR EACH ROW EXECUTE FUNCTION public.check_cage_status_and_capacity();
+
+
+--
 -- Name: dinosaurs fk_rails_5f4340d30a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -321,6 +360,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230321140843'),
 ('20230321144009'),
 ('20230321145856'),
-('20230321235922');
+('20230321235922'),
+('20230322030200');
 
 
