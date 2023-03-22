@@ -4,4 +4,12 @@ FactoryBot.define do
     species
     cage { nil }
   end
+
+  trait :carnivore do
+    species { build(:species, :carnivore) }
+  end
+
+  trait :herbivore do
+    species { build(:species, :herbivore) }
+  end
 end

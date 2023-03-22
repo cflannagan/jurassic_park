@@ -7,7 +7,7 @@ RSpec.describe Species, type: :model do
   end
 
   context "enum" do
-    subject { build(:species, :herbivore, name: "A new herbivore species") }
+    subject { build(:species, :herbivore) }
     it { is_expected.to be_herbivore }
     it "should raise an error" do
       subject.save!

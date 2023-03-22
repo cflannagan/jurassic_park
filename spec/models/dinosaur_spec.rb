@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Dinosaur, type: :model do
-  subject { build(:dinosaur, species: build(:species, :herbivore)) }
+  subject { build(:dinosaur, :herbivore) }
   context "factory" do
     it { is_expected.to be_valid }
   end
@@ -14,13 +14,9 @@ RSpec.describe Dinosaur, type: :model do
   context "db constraints" do
     context "cage_id trigger check for carnivores" do
       let(:cage) { create(:cage, :active, capacity: 2) }
-      let(:carnivore_species) { create(:species, :carnivore) }
-      let(:herbivore_species) { create(:species, :herbivore, name: "New herbivore species") }
-      let(:existing_carnivore) { create(:dinosaur, name: "Existing Carnivore", species: carnivore_species) }
-      let(:existing_herbivore) { create(:dinosaur, name: "Existing Herbivore", species: herbivore_species) }
-      let(:different_carnivore_species) { create(:species, :carnivore, name: "Different Carnivore Species") }
-      # let(:different_herbivore_species) { create(:species, :herbivore, name: "Different Herbivore Species") }
-      let(:incompatible_carnivore) { create(:dinosaur, name: "Incompatible", species: different_carnivore_species) }
+      let(:existing_carnivore) { create(:dinosaur, :carnivore) }
+      let(:existing_herbivore) { create(:dinosaur, :herbivore) }
+      let(:incompatible_carnivore) { create(:dinosaur, :carnivore) }
       it "cannot be put into powered down cage" do
         cage.down!
         expect { incompatible_carnivore.update_column(:cage_id, cage.id) }
@@ -28,7 +24,7 @@ RSpec.describe Dinosaur, type: :model do
       end
       it "cannot be put into full cage" do
         cage.update!(capacity: 1)
-        create(:dinosaur, name: "Same species as Incompatible", species: incompatible_carnivore.species, cage:)
+        create(:dinosaur, species: incompatible_carnivore.species, cage:)
         expect { incompatible_carnivore.update_column(:cage_id, cage.id) }
           .to raise_error(ActiveRecord::StatementInvalid, /capacity/)
       end
@@ -59,42 +55,24 @@ RSpec.describe Dinosaur, type: :model do
       it "full" do
         dino.cage = cage
         cage.active!
-        create(:dinosaur, name: "FasterThanYou!", species: dino.species, cage:)
+        create(:dinosaur, species: dino.species, cage:)
         expect(dino).not_to be_valid
         expect(dino.errors[:base].first).to include("full")
       end
       it "carnivores can only be assigned to cages with same species" do
-        uncaged_carnivore = create(
-          :dinosaur,
-          name: "Mr. Teeth",
-          species: create(:species, :carnivore, name: "Many Teeth")
-        )
+        uncaged_carnivore = create(:dinosaur, :carnivore)
         cage.update!(capacity: 2)
         cage.active!
-        create(
-          :dinosaur,
-          name: "Not Friends with Mr. Teeth",
-          species: create(:species, :carnivore, name: "Even More Teeth"),
-          cage:
-        )
+        create(:dinosaur, :carnivore, cage:)
         uncaged_carnivore.cage = cage
         expect(uncaged_carnivore).not_to be_valid
         expect(uncaged_carnivore.errors[:base].first).to include("containing #{uncaged_carnivore.species}")
       end
       it "herbivores can only be assigned to cages with no carnivores" do
-        uncaged_herbivore = create(
-          :dinosaur,
-          name: "Mr. Gummy",
-          species: create(:species, :herbivore, name: "Gummy Teeth")
-        )
+        uncaged_herbivore = create(:dinosaur, :herbivore)
         cage.update!(capacity: 2)
         cage.active!
-        create(
-          :dinosaur,
-          name: "Please That Herbivore To My Cage",
-          species: create(:species, :carnivore, name: "Many Teeth"),
-          cage:
-        )
+        create(:dinosaur, :carnivore, cage:)
         uncaged_herbivore.cage = cage
         expect(uncaged_herbivore).not_to be_valid
         expect(uncaged_herbivore.errors[:base].first).to include("containing other herbivores")

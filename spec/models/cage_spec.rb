@@ -36,7 +36,7 @@ RSpec.describe Cage, type: :model do
       it "errors when exceeding capacity" do
         cage = create(:cage, :active, capacity: 2)
         create(:dinosaur, cage:)
-        create(:dinosaur, name: "Another", species: Species.take, cage:)
+        create(:dinosaur, species: Species.take, cage:)
         expect(cage).to be_full
         cage.capacity = 1
         expect(cage).not_to be_valid
