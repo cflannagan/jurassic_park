@@ -78,6 +78,11 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+
+  # A library for generating fake data such as names, addresses, and phone numbers.
+  # [https://github.com/faker-ruby/faker#generators]
+  gem 'faker'
+
   gem "selenium-webdriver"
 
   # Simple one-liner tests for common Rails functionality [https://github.com/thoughtbot/shoulda-matchers]

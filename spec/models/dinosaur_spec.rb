@@ -11,6 +11,40 @@ RSpec.describe Dinosaur, type: :model do
     it { should belong_to(:cage).optional }
   end
 
+  context "db constraints" do
+    context "cage_id trigger check for carnivores" do
+      let(:cage) { create(:cage, :active, capacity: 2) }
+      let(:carnivore_species) { create(:species, :carnivore) }
+      let(:herbivore_species) { create(:species, :herbivore, name: "New herbivore species") }
+      let(:existing_carnivore) { create(:dinosaur, name: "Existing Carnivore", species: carnivore_species) }
+      let(:existing_herbivore) { create(:dinosaur, name: "Existing Herbivore", species: herbivore_species) }
+      let(:different_carnivore_species) { create(:species, :carnivore, name: "Different Carnivore Species") }
+      # let(:different_herbivore_species) { create(:species, :herbivore, name: "Different Herbivore Species") }
+      let(:incompatible_carnivore) { create(:dinosaur, name: "Incompatible", species: different_carnivore_species) }
+      it "cannot be put into powered down cage" do
+        cage.down!
+        expect { incompatible_carnivore.update_column(:cage_id, cage.id) }
+          .to raise_error(ActiveRecord::StatementInvalid, /powered down/)
+      end
+      it "cannot be put into full cage" do
+        cage.update!(capacity: 1)
+        create(:dinosaur, name: "Same species as Incompatible", species: incompatible_carnivore.species, cage:)
+        expect { incompatible_carnivore.update_column(:cage_id, cage.id) }
+          .to raise_error(ActiveRecord::StatementInvalid, /capacity/)
+      end
+      it "cannot be put into cage with different carnivore species" do
+        existing_carnivore.update!(cage:)
+        expect { incompatible_carnivore.update_column(:cage_id, cage.id) }
+          .to raise_error(ActiveRecord::StatementInvalid, /different species/)
+      end
+      it "nor be put into cage with herbivores" do
+        existing_carnivore.update!(cage:)
+        expect { existing_herbivore.update_column(:cage_id, cage.id) }
+          .to raise_error(ActiveRecord::StatementInvalid, /herbivore/)
+      end
+    end
+  end
+
   context "validations" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_uniqueness_of(:name) }

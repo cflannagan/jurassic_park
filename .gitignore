@@ -32,3 +32,5 @@
 
 # Simplecov coverage output
 coverage/**/*
+
+.DS_Store
