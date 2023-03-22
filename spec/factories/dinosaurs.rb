@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :dinosaur do
-    name { "Ty" }
+    name { Faker::Movies::HowToTrainYourDragon.unique.dragon }
     species
     cage { nil }
   end

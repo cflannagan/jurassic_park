@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :species do
-    name { "Stegosaurus" }
+    name { Faker::Games::Pokemon.unique.name }
     dinosaur_type { "herbivore" }
   end
 end
