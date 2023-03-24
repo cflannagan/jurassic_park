@@ -25,6 +25,10 @@ class Dinosaur < ApplicationRecord
     joins(:species).where(species: { name: species_name })
   end
 
+  def self.carnivore
+    joins(:species).where(species: { dinosaur_type: "carnivore" })
+  end
+
   # No "carnivore" counterpart, we would need to use "by_species_name" instead
   def self.herbivore
     joins(:species).where(species: { dinosaur_type: "herbivore" })

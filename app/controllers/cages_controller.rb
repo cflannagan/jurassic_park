@@ -4,8 +4,14 @@ class CagesController < ApplicationController
 
   # GET /cages
   # GET /cages.json
-  def index
+  def index # rubocop:disable Metrics/AbcSize
     @cages = Cage.all
+    @cages = @cages.empty if params.key?(:empty)
+    @cages = @cages.full if params.key?(:full)
+    @cages = @cages.not_full if params.key?(:not_full)
+    @cages = @cages.not_empty if params.key?(:not_empty)
+    @cages = @cages.active if params.key?(:active)
+    @cages = @cages.down if params.key?(:down)
   end
 
   # GET /cages/1

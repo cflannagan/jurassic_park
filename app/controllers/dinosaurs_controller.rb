@@ -6,6 +6,12 @@ class DinosaursController < ApplicationController
   # GET /dinosaurs.json
   def index
     @dinosaurs = Dinosaur.all
+    @dinosaurs = @dinosaurs.caged if params.key?(:caged)
+    @dinosaurs = @dinosaurs.not_caged if params.key?(:not_caged)
+    @dinosaurs = @dinosaurs.carnivore if params.key?(:carnivore)
+    @dinosaurs = @dinosaurs.herbivore if params.key?(:herbivore)
+    # TODO: Fix by species name, erroring right now
+    # @dinosaurs = @dinosaurs.by_species_name(params[:species]) if params[:species]
   end
 
   # GET /dinosaurs/1

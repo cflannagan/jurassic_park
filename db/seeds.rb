@@ -51,6 +51,10 @@ dinosaurs.each do |dinosaur|
   puts "#{name}, a #{species_name}, has been added to Jurassic Park!"
 end
 
+cage = Cage.last
+cage.active!
+Dinosaur.order("id ASC").limit(2).update_all(cage_id: cage.id)
+
 ActiveRecord::Base.connection.tables.each do |t|
   ActiveRecord::Base.connection.reset_pk_sequence!(t)
 end
