@@ -12,6 +12,19 @@ RSpec.describe Dinosaur, type: :model do
   end
 
   context "scopes" do
+    let!(:caged_dino) { create(:dinosaur, :carnivore, cage:) }
+    let(:not_caged_dino) { create(:dinosaur, :herbivore) }
+    let!(:cage) { create(:cage, :active) }
+    it "#caged, #not_caged" do
+      expect(described_class.not_caged).to match_array([not_caged_dino])
+      expect(described_class.caged).to match_array([caged_dino])
+    end
+    it "#by_species_name" do
+      expect(described_class.by_species_name(caged_dino.species.to_s)).to match_array([caged_dino])
+    end
+    it "#herbivore" do
+      expect(described_class.herbivore).to match_array([not_caged_dino])
+    end
   end
 
   context "db constraints" do

@@ -19,6 +19,27 @@ RSpec.describe Cage, type: :model do
     it { should have_many(:dinosaurs) }
   end
 
+  context "scopes" do
+    let!(:empty_cage) { create(:cage) }
+    let!(:partially_full_cage) { create(:cage, :active, capacity: 2) }
+    let!(:full_cage) { create(:cage, :active, capacity: 1) }
+    let!(:dinosaur1) { create(:dinosaur, cage: partially_full_cage) }
+    let!(:dinosaur2) { create(:dinosaur, cage: full_cage) }
+    # empty full not_empty not_full
+    it "not_empty" do
+      expect(described_class.not_empty).to match_array([partially_full_cage, full_cage])
+    end
+    it "not_full" do
+      expect(described_class.not_full).to match_array([empty_cage, partially_full_cage])
+    end
+    it "empty" do
+      expect(described_class.empty).to match_array([empty_cage])
+    end
+    it "full" do
+      expect(described_class.full).to match_array([full_cage])
+    end
+  end
+
   context "db constraints" do
     context "cage_id trigger check for carnivores" do
       let(:cage) { create(:cage, :active) }

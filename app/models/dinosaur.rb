@@ -13,6 +13,10 @@ class Dinosaur < ApplicationRecord
 
   delegate :carnivore?, :herbivore?, to: :species
 
+  def self.caged
+    where.not(cage_id: nil)
+  end
+
   def self.not_caged
     where(cage_id: nil)
   end
@@ -23,7 +27,7 @@ class Dinosaur < ApplicationRecord
 
   # No "carnivore" counterpart, we would need to use "by_species_name" instead
   def self.herbivore
-    joins(:species).where(dinosaur_type: "herbivore")
+    joins(:species).where(species: { dinosaur_type: "herbivore" })
   end
 
   def caged?
