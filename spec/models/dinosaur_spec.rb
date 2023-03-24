@@ -11,6 +11,9 @@ RSpec.describe Dinosaur, type: :model do
     it { should belong_to(:cage).optional }
   end
 
+  context "scopes" do
+  end
+
   context "db constraints" do
     context "cage_id trigger check for carnivores" do
       let(:cage) { create(:cage, :active, capacity: 2) }

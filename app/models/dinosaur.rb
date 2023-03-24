@@ -5,13 +5,26 @@ class Dinosaur < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
   with_options if: :cage do |cage|
-    cage.validate :cage_is_not_powered_down # , if: :cage
-    cage.validate :cage_is_not_full # , if: :cage
-    cage.validate :cage_has_same_species # , if: :cage
-    cage.validate :cage_has_no_carnivores # , if: :cage
+    cage.validate :cage_is_not_powered_down
+    cage.validate :cage_is_not_full
+    cage.validate :cage_has_same_species
+    cage.validate :cage_has_no_carnivores
   end
 
   delegate :carnivore?, :herbivore?, to: :species
+
+  def self.not_caged
+    where(cage_id: nil)
+  end
+
+  def self.by_species_name(species_name)
+    joins(:species).where(species: { name: species_name })
+  end
+
+  # No "carnivore" counterpart, we would need to use "by_species_name" instead
+  def self.herbivore
+    joins(:species).where(dinosaur_type: "herbivore")
+  end
 
   def caged?
     cage.present?

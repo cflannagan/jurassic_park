@@ -9,6 +9,24 @@ class Cage < ApplicationRecord
 
   has_many :dinosaurs
 
+  def self.empty
+    left_joins(:dinosaurs).where(dinosaurs: { id: nil })
+  end
+
+  def self.full
+    left_joins(:dinosaurs).group(:id).having('count(dinosaurs.id) >= cages.capacity')
+  end
+
+  # includes empty
+  def self.not_full
+    left_joins(:dinosaurs).group(:id).having('count(dinosaurs.id) < cages.capacity')
+  end
+
+  # includes full
+  def self.not_empty
+    joins(:dinosaurs)
+  end
+
   def down!
     raise StandardError, "cannot power down cage with dinosaurs present" if dinosaurs.present?
 
