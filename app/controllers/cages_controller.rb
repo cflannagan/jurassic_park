@@ -1,5 +1,6 @@
 # Controller class for Cage model
 class CagesController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action :set_cage, only: %i[show update destroy]
 
   # GET /cages

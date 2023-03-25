@@ -71,7 +71,7 @@ class Dinosaur < ApplicationRecord
 
     return unless cage.dinosaurs.joins(:species).where("species.dinosaur_type = 'carnivore'").exists?
 
-    errors.add(:base, "#{name} is a #{species} (a herbivore); can only be assigned to either an active empty cage or a
-      cage containing other herbivores")
+    errors.add(:base, "#{name} is a #{species} (a herbivore); can only be assigned to either an active empty cage or " \
+      "a cage containing other herbivores")
   end
 end

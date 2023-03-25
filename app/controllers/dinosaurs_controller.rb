@@ -1,17 +1,19 @@
 # Controller class for Dinosaur model
 class DinosaursController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   before_action :set_dinosaur, only: %i[show update destroy]
 
   # GET /dinosaurs
   # GET /dinosaurs.json
-  def index
+  def index # rubocop:disable Metrics/AbcSize
     @dinosaurs = Dinosaur.all
     @dinosaurs = @dinosaurs.caged if params.key?(:caged)
     @dinosaurs = @dinosaurs.not_caged if params.key?(:not_caged)
     @dinosaurs = @dinosaurs.carnivore if params.key?(:carnivore)
     @dinosaurs = @dinosaurs.herbivore if params.key?(:herbivore)
-    # TODO: Fix by species name, erroring right now
-    # @dinosaurs = @dinosaurs.by_species_name(params[:species]) if params[:species]
+    @dinosaurs = @dinosaurs.by_species_name(params[:species]) if params[:species]
+    @dinosaurs.joins(:species)
   end
 
   # GET /dinosaurs/1

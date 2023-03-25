@@ -1,11 +1,14 @@
 # Controller class for Species model
 class SpeciesController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action :set_species, only: %i[show update destroy]
 
   # GET /species
   # GET /species.json
   def index
     @species = Species.all
+    @species = @species.carnivore if params.key?(:carnivore)
+    @species = @species.herbivore if params.key?(:herbivore)
   end
 
   # GET /species/1
